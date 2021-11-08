@@ -6,7 +6,7 @@ Para estas pruebas evaluaremos la complejidad ciclomática y pondremos casos de 
 
 Esta función se encarga de establecer los parametros que requeriremos en nuestro micro.
 
-```c++=
+```c++
 void setup() {
   Serial.begin(115200);
   
