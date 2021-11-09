@@ -88,7 +88,6 @@ void loop() {
   delay(1000);
 }
 
-
 // Esta función estara detectando si hay una lectura de RFID periodicamente
 void readRFID(){
   // Revisamos si hay nuevas tarjetas  presentes
