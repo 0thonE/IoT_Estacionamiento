@@ -6,7 +6,7 @@ Para estas pruebas evaluaremos la complejidad ciclomática y pondremos casos de 
 
 Esta función se encarga de establecer los parametros que requeriremos en nuestro micro.
 
-<img src="https://user-images.githubusercontent.com/48103674/140690753-0383db54-b617-4f90-991e-36a82c1a69a9.png" alt="setup function" width="600">
+<img src="https://user-images.githubusercontent.com/48103674/140690753-0383db54-b617-4f90-991e-36a82c1a69a9.png" alt="setup function" width="550">
 
 Usando la formmula **V(G) = c + 1** podemos encontrar que la complejidad cilomática de esta función es de: **4**
 
@@ -44,7 +44,8 @@ Usando la formmula **V(G) = c + 1** podemos encontrar que la complejidad cilomá
 
 Esta función se encarga de leer la tarjeta rfid en caso de que se detecte una ante el sensor.
 
-___img___
+<img src="https://user-images.githubusercontent.com/48103674/141025443-f2b29e3a-a64e-4ace-8610-3d40d7be5f47.png" alt="setup function" width="550">
+
 
 Usando la formmula **V(G) = c + 1** podemos encontrar que la complejidad cilomática de esta función es de: **3**
 
@@ -76,7 +77,7 @@ Usando la formmula **V(G) = c + 1** podemos encontrar que la complejidad cilomá
 
 Esta función se encarga de verificar si existe un cambio en el estado de los sensores como puede ser el caso de que se ocupe un espacio o se libere
 
-___img___
+<img src="https://user-images.githubusercontent.com/48103674/141025388-a8e9b00f-33c6-4ffe-9204-fef0529bea84.png" alt="setup function" width="550">
 
 Usando la formmula **V(G) = c + 1** podemos encontrar que la complejidad cilomática de esta función es de: **9**
 
@@ -156,7 +157,8 @@ Usando la formmula **V(G) = c + 1** podemos encontrar que la complejidad cilomá
 
 Esta función se encarga de enviar el estado de los estacionamientos a la nube en caso de cambios
 
-___img___
+<img src="https://user-images.githubusercontent.com/48103674/141025548-49224bf4-9894-49ba-ac99-c920f44b2602.png" alt="setup function" width="550">
+
 
 Usando la formmula **V(G) = c + 1** podemos encontrar que la complejidad cilomática de esta función es de: **3**
 
