@@ -1,28 +1,31 @@
+//Libraries
 #include <SPI.h>
 #include <MFRC522.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <PubSubClient.h>
 
-#define parkingSize 2
+//Constants
+#define SS_PIN 5
+#define RST_PIN 0
+#define parkingSize 5
 #define sensorTH 2100
-#define RST_PIN  9   //Pin 9 para el reset del RC522
-#define SS_PIN  10   //Pin 10 para el SS (SDA) del RC522
-MFRC522 mfrc522(SS_PIN, RST_PIN); //Creamos el objeto para el RC522
+
+MFRC522 rfid = MFRC522(SS_PIN, RST_PIN);
+byte rfid_token[4];
+String tokenPub;
 
 struct PLot{
   int lotNo;        // Número del lote de estacionamiento
   bool isFree;      // Esta ocupado o no
-  bool isAssigned;  // Si el lote se ha asignado a un carro
   String carID;     // Placa del carro asignado
 };
 
 PLot parking[parkingSize];
-#define Sensor0 34
-#define Sensor1 35
+int sensorArray[parkingSize] = {36, 39, 34, 35, 32};
 int sensorRead = 0;
 
-/********** Variables para la configuración de la conexión a la nube *************/
+ /********** Variables para la configuración de la conexión a la nube *************/
 const char* ssid = "TP-Link_9BEC";
 const char* password = "41874042";
 #define ORG "1krrqi" 
@@ -41,19 +44,9 @@ PubSubClient client(server, 1883, NULL, wifiClient);
 void setup() {
   Serial.begin(115200);
   
-  SPI.begin();        //Iniciamos el Bus SPI
-  mfrc522.PCD_Init(); // Iniciamos  el MFRC522
-  
-  // Valores de los lotes de estacionamiento
-  parking[0].lotNo = 0;
-  parking[1].lotNo = 1;
-  
-  parking[0].isFree = true;
-  parking[1].isFree = true;
-
-  // Setup de los pines de lectura de los sensores
-  pinMode(Sensor0, INPUT);
-  pinMode(Sensor1, INPUT);
+  SPI.begin();
+  rfid.PCD_Init();
+  setupLots();
   
   // Setup de la conexión a internet y a la nube
   WiFi.begin(ssid, password);
@@ -75,56 +68,103 @@ void setup() {
     }
     Serial.println("Bluemix connected");
   }
-  
 }
 
 void loop() {
   client.loop();
-
-  readRFID();
   sensorReadLoop();
-  publishStatus();
+  readRFID();
   
   delay(1000);
 }
 
+
 // Esta función estara detectando si hay una lectura de RFID periodicamente
 void readRFID(){
   // Revisamos si hay nuevas tarjetas  presentes
-  if ( mfrc522.PICC_IsNewCardPresent()) {  
+  if ( rfid.PICC_IsNewCardPresent()) {  
     //Seleccionamos una tarjeta
-    if ( mfrc522.PICC_ReadCardSerial()) {
+    if ( rfid.PICC_ReadCardSerial()) {
       // Enviamos serialemente su UID
       Serial.print("Card UID:");
-      for (byte i = 0; i < mfrc522.uid.size; i++) {
-        Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-        Serial.print(mfrc522.uid.uidByte[i], HEX);   
-      } 
+      for (byte i = 0; i < rfid.uid.size; i++) {
+        Serial.print(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
+        Serial.print(rfid.uid.uidByte[i], HEX);
+        rfid_token[i] = rfid.uid.uidByte[i];
+      }
       Serial.println();
+      publishStatusRFID();
       // Terminamos la lectura de la tarjeta  actual
-      mfrc522.PICC_HaltA();         
+      rfid.PICC_HaltA();         
     }      
+  }
+}
+
+// Función para enviar el estado de los estacionamientos a la nube
+void publishStatusRFID(){
+  String payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"rfid0\":";
+         payload += rfid_token[0];
+         payload += "}}";
+
+  if (client.publish(pubTopic1, (char*) payload.c_str())) {
+    Serial.println("Publish ok");
+  } else {
+    Serial.println("Publish failed");
+  }
+
+         payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"rfid1\":";
+         payload += rfid_token[1];
+         payload += "}}";
+
+  if (client.publish(pubTopic1, (char*) payload.c_str())) {
+    Serial.println("Publish ok");
+  } else {
+    Serial.println("Publish failed");
+  }
+
+         payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"rfid2\":";
+         payload += rfid_token[2];
+         payload += "}}";
+
+  if (client.publish(pubTopic1, (char*) payload.c_str())) {
+    Serial.println("Publish ok");
+  } else {
+    Serial.println("Publish failed");
+  }
+
+         payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"rfid3\":";
+         payload += rfid_token[3];
+         payload += "}}";
+
+  if (client.publish(pubTopic1, (char*) payload.c_str())) {
+    Serial.println("Publish ok");
+  } else {
+    Serial.println("Publish failed");
+  }
+}
+
+void setupLots(){
+  for(int i = 0; i < parkingSize; i++){
+    parking[i].lotNo = i;
+    parking[i].isFree = true;
   }
 }
 
 // Esta función realiza un barrido a los sensores para ver el status
 void sensorReadLoop(){
-  sensorRead = analogRead(Sensor0);
-  Serial.println(sensorRead);
-  // Límites de la medición del sensor
-  if(sensorRead > sensorTH && parking[0].isFree == true){
-    usingLot(0, "ABC-123");
-  } else if(sensorRead < sensorTH && parking[0].isFree == false){
-    freeLot(0);
-  }
-
-  sensorRead = analogRead(Sensor1);
-  Serial.println(sensorRead);
-  // Límites de la medición del sensor
-  if(sensorRead > sensorTH && parking[1].isFree == true){
-    usingLot(1, "ABC-123");
-  } else if(sensorRead < sensorTH && parking[1].isFree == false){
-    freeLot(1);
+  for(int i = 0; i < parkingSize; i++){
+    sensorRead = analogRead(sensorArray[i]);
+    Serial.println("Lote " + String(i, DEC) + ": " + sensorRead);
+    // Límites de la medición del sensor
+    if(sensorRead > sensorTH && parking[i].isFree == true){
+      usingLot(i, tokenPub);
+    } else if(sensorRead < sensorTH && parking[i].isFree == false){
+      freeLot(i);
+    }
   }
 }
 
@@ -133,6 +173,7 @@ void usingLot(int lot, String carID){
   parking[lot].isFree = false;
   parking[lot].carID = carID;
   Serial.println("El auto con placas: " + carID + " ha tomado el lote No: " + lot);
+  publishStatusLots();
 }
 
 // Función para marcar un lote como libre
@@ -140,26 +181,61 @@ void freeLot(int lot){
   parking[lot].isFree = true;
   parking[lot].carID = "";
   Serial.println("Se ha liberado el lote " + lot);
+  publishStatusLots();
 }
 
 // Función para enviar el estado de los estacionamientos a la nube
-void publishStatus(){
+void publishStatusLots(){
   String payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
          payload += ",\"lot0\":";
          payload += parking[0].isFree;
          payload += "}}";
 
-  if (client.publish(pubTopic1, (char*) payload.c_str())) {
+  if (client.publish(pubTopic2, (char*) payload.c_str())) {
     Serial.println("Publish ok");
   } else {
     Serial.println("Publish failed");
   }
-  String payload1 = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
-         payload1 += ",\"lot1\":";
-         payload1 += parking[1].isFree;
-         payload1 += "}}";
-       
-  if (client.publish(pubTopic2, (char*) payload1.c_str())) {
+
+         payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"lot1\":";
+         payload += parking[1].isFree;
+         payload += "}}";
+
+  if (client.publish(pubTopic2, (char*) payload.c_str())) {
+    Serial.println("Publish ok");
+  } else {
+    Serial.println("Publish failed");
+  }
+
+         payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"lot2\":";
+         payload += parking[2].isFree;
+         payload += "}}";
+
+  if (client.publish(pubTopic2, (char*) payload.c_str())) {
+    Serial.println("Publish ok");
+  } else {
+    Serial.println("Publish failed");
+  }
+
+         payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"lot3\":";
+         payload += parking[3].isFree;
+         payload += "}}";
+
+  if (client.publish(pubTopic2, (char*) payload.c_str())) {
+    Serial.println("Publish ok");
+  } else {
+    Serial.println("Publish failed");
+  }
+
+         payload = "{\"d\":{\"Name\":\"" DEVICE_ID "\"";
+         payload += ",\"lot4\":";
+         payload += parking[4].isFree;
+         payload += "}}";
+
+  if (client.publish(pubTopic2, (char*) payload.c_str())) {
     Serial.println("Publish ok");
   } else {
     Serial.println("Publish failed");
