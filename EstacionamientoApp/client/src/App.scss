@@ -1,0 +1,16 @@
+@import 'carbon-components/scss/globals/scss/vendor/@carbon/type/scss/font-family.scss';
+@import 'carbon-components/scss/globals/scss/vendor/@carbon/layout/scss/breakpoint.scss';
+@import 'carbon-components/scss/globals/scss/typography.scss';
+@import 'carbon-components/scss/globals/scss/vars.scss';
+
+// Variables
+@import './app-var';
+
+
+//Components
+@import "./components/NavBar/nav-bar";
+@import './components/ParkingLot/parking-lot';
+
+#root-container{
+    padding-top: $spacing-09;
+}

@@ -1,0 +1,50 @@
+.session-log__wrapper {
+    position: absolute;
+    top: $spacing-09;
+    right: 0;
+    background-color: $loggin-black;
+
+    min-width: 16.875rem;
+    max-width: 20rem;
+
+    .account__wrapper {
+        padding-top: $spacing-05;
+        padding-bottom: $spacing-05;
+        padding-right: $spacing-05;
+        padding-left: $spacing-05;
+
+        .bx--account-switcher--information {
+            margin-top: $spacing-03;
+            margin-bottom: $spacing-03;
+
+            p {
+                color: #f3f3f3;
+                font-weight: 400;
+                font-size: 1.25rem;
+                line-height: 1.1;
+                overflow: visible;
+            }
+        }
+    }
+
+    .session__wrapper {
+        .session__btn {
+            width: 100% !important;
+            justify-content: normal !important;
+            gap: $spacing-07;
+        }
+
+        svg {
+            position: relative;
+        }
+    }
+}
+
+.user-global-ha {
+    .bx--assistive-text {
+        display: none !important;
+    }
+    &::before {
+        content: none !important;
+    }
+}

@@ -1,23 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React/* , { useState } */ from 'react-router';
+import './App.scss';
+
+import { Routes, Route } from 'react-router-dom';
+
+import ParkingLot from './components/ParkingLot';
+import NavBar from './components/NavBar';
+
+//pages
+import NotFoundPage from './pages/NotFoundPage';
+import LoginPage from './pages/LoginPage';
+
+
+
+
+let Map = () => {
+  return (<div style={{ width: '800px', backgroundColor: 'red' }}><ParkingLot /> </div>)
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div id="root-container">
+      <NavBar />
+      <Routes>
+        <Route exact path="/" element={<Map />} />
+
+        <Route exact path="/login" element={<LoginPage />} />
+        <Route path="/" element={<NotFoundPage />} />
+
+      </Routes>
     </div>
   );
 }
