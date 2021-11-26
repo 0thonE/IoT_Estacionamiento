@@ -1,21 +1,16 @@
 import React, { useContext } from "react";
-import { Route, Redirect } from "react-router-dom";
-import { AuthContext } from "./Auth";
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "./useAuth";
 
-const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
-  const {currentUser} = useContext(AuthContext);
-  return (
-    <Route
-      {...rest}
-      render={routeProps =>
-        !!currentUser ? (
-          <RouteComponent {...routeProps} />
-        ) : (
-          <Redirect to={"/login"} />
-        )
-      }
-    />
-  );
+const PrivateRoute = ({ users = [], children }) => {
+  const { currentUser } = useContext(AuthContext);
+  console.log(`currentU`, currentUser)
+
+  if (users.length > 0 && !users.find(user => currentUser?.multiFactor?.user?.email?.includes(user))) {
+    return <Navigate to="/" />
+  }
+
+  return !!currentUser ? children : <Navigate to="/login" />;
 };
 
 

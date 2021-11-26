@@ -1,28 +1,25 @@
-import React/* , { useState } */ from 'react-router';
+import React/* , { useState, useContext } */ from 'react';
 import './App.scss';
 
 import { Routes, Route } from 'react-router-dom';
+import PrivateRoute from "./state/PrivateRoute";
 
-import ParkingLot from './components/ParkingLot';
 import NavBar from './components/NavBar';
 
 //pages
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
+import Map from './pages/Map'
+import MapCont from './pages/MapCont'
 
-
-
-
-let Map = () => {
-  return (<div style={{ width: '800px', backgroundColor: 'red' }}><ParkingLot /> </div>)
-}
 
 function App() {
   return (
     <div id="root-container">
       <NavBar />
       <Routes>
-        <Route exact path="/" element={<Map />} />
+        <Route className="Map-route" exact path="/" element={<PrivateRoute><Map /></PrivateRoute>} />
+        <Route className="Map-route" exact path="/shhh" element={<PrivateRoute users={['cont']}><MapCont /></PrivateRoute>} />
 
         <Route exact path="/login" element={<LoginPage />} />
         <Route path="/" element={<NotFoundPage />} />

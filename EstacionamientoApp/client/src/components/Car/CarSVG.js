@@ -39,7 +39,7 @@ let darkenColor = (hex, darken = 14) => {
 }
 
 function SvgCar({ car_color = '#29297D', ...props }) {
-
+  car_color = car_color.toString(16).padEnd(7, 0)
   let darkColor = darkenColor(car_color);
 
   return (

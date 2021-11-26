@@ -10,6 +10,12 @@
 //Components
 @import "./components/NavBar/nav-bar";
 @import './components/ParkingLot/parking-lot';
+@import './components/UserModal/user-modal';
+
+//Pages
+@import './pages/LoginPage/login-page';
+@import './pages/Map/map-page';
+@import './pages/MapCont/map-page';
 
 #root-container{
     padding-top: $spacing-09;

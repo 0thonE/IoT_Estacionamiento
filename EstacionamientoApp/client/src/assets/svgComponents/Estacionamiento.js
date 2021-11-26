@@ -3,8 +3,9 @@ import * as React from "react";
 function SvgEstacionamiento(props) {
   return (
     <svg
-      width="100%"
-      viewBox="0 0 450 289" 
+      width="1em"
+      height="1em"
+      viewBox="0 0 450 289"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}

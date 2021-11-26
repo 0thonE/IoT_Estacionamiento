@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 
 import Car from '../Car';
+import UserModal from '../UserModal';
 
-let dumb_parkingSpots = [
-  { id: 'C24-1', x: 40, y: 30, parkingState: 'empty', user: null },
-  { id: 'C24-2', x: 116, y: 30, parkingState: 'in_use', user: null },
-  { id: 'C24-3', x: 193, y: 30, parkingState: 'empty', user: null },
-  { id: 'C24-4', x: 270, y: 30, parkingState: 'empty', user: null },
-  { id: 'C24-5', x: 347, y: 30, parkingState: 'assigned', user: null },
-];
+// let dumb_parkingSpots = [
+//   { id: 'C24-1', x: 40, y: 30, parkingState: 'empty', user: null },
+//   { id: 'C24-2', x: 116, y: 30, parkingState: 'in_use', user: { color: '#113', special: false, nombre: 'Ramon', placas: 'FKL-234-ro' } },
+//   { id: 'C24-3', x: 193, y: 30, parkingState: 'empty', user: null },
+//   { id: 'C24-4', x: 270, y: 30, parkingState: 'empty', user: null },
+//   { id: 'C24-5', x: 347, y: 30, parkingState: 'assigned', user: null },
+// ];
 
-const ParkingSpace = ({ parkingNumber, x = 40, y = 30, pState = 'empty', children, ...props }) => {
+const ParkingSpace = ({ parkingNumber, x = 40, y = 30, pState = 'empty', children, user, ...props }) => {
+
+  console.log(`parkingNumber`, parkingNumber)
 
   if (pState?.toLocaleLowerCase() === 'user_assigned')
     return <g transform={`translate(${x - 1.5},${y - 4})`}>
@@ -34,12 +37,18 @@ const ParkingSpace = ({ parkingNumber, x = 40, y = 30, pState = 'empty', childre
       </foreignObject>
     </g>
 
+  if (pState?.toLocaleLowerCase() === 'admin_assigned')
+    return (<g transform={`translate(${x},${y})`}><Car style={{ opacity: 0.5 }} car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
+
 
   if (pState?.toLocaleLowerCase() === 'user_in_use')
-    return (<g transform={`translate(${x},${y})`}><Car car_color={`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
+    return (<g transform={`translate(${x},${y})`}><Car car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
+
+  if (pState?.toLocaleLowerCase() === 'stand_in_use')
+    return (<g transform={`translate(${x},${y})`}><Car car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`}  /></g>)
 
   if (pState?.toLocaleLowerCase() === 'admin_in_use')
-    return (<g transform={`translate(${x},${y})`}><Car user={props.user} /></g>)
+    return (<g transform={`translate(${x},${y})`} onClick={() => props.open(user)} ><Car user={user} car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
 
   return null
 
@@ -47,8 +56,20 @@ const ParkingSpace = ({ parkingNumber, x = 40, y = 30, pState = 'empty', childre
 
 }
 
-const SvgEstacionamiento = ({ parking_view = 'user', ...props }) => {
-  const [parkingSpots, setParkingSpots] = useState(dumb_parkingSpots);
+const SvgEstacionamiento = ({ parkingSpots, parking_view = 'user', user, ...props }) => {
+  // const [_parkingSpots, setParkingSpots] = useState(parkingSpots);
+  const [open, setOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const openModal = (user = null) => {
+    setCurrentUser(user, setOpen(true))
+  }
+
+  const closeModal = () => {
+    setCurrentUser(null, setOpen(false))
+  }
+
+  console.log(`parkingSpots`, parkingSpots)
 
 
   return (
@@ -101,15 +122,19 @@ const SvgEstacionamiento = ({ parking_view = 'user', ...props }) => {
         fill="#fff"
       />
 
-      {parkingSpots.map((e, index) => (
-        <ParkingSpace x={e.x} y={e.y} parkingNumber={e.id} pState={`${parking_view}_${e.parkingState}`} />
+      {parkingSpots && parkingSpots.map((e, index) => (
+        <ParkingSpace x={e.x} y={e.y} parkingNumber={e.id} pState={`${parking_view}_${e.state}`} user={e.user} open={openModal} />
       ))}
+      {open ?
+        <g transform={`translate(${0},${0})`}>
+          <foreignObject x={0} y={0} width="100%" height="100%" style={{ overflow: "visible" }}>
+            <div className="base" xmlns="http://www.w3.org/1999/xhtml">
+              <UserModal open={open} user={currentUser} setClose={closeModal} />
+            </div>
+          </foreignObject>
+        </g>
+        : null}
 
-      {/* <ParkingSpace x={40} parkingNumber={1} />
-      <ParkingSpace x={116} parkingNumber={2} pState="user_assigned" />
-      <ParkingSpace x={193} parkingNumber={3} pState="in_use" />
-      <ParkingSpace x={270} parkingNumber={4} />
-      <ParkingSpace x={347} parkingNumber={5} /> */}
       <defs>
         <clipPath id="Estacionamiento_svg__clip0_6_306">
           <path fill="#fff" transform="rotate(-90 350 -86)" d="M0 0h88v7H0z" />
