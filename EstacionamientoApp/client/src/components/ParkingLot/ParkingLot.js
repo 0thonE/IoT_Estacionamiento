@@ -15,7 +15,7 @@ const ParkingSpace = ({ parkingNumber, x = 40, y = 30, pState = 'empty', childre
 
   console.log(`parkingNumber`, parkingNumber)
 
-  if (pState?.toLocaleLowerCase() === 'user_assigned')
+  if (pState?.toLocaleLowerCase() === 'stand_assigned')
     return <g transform={`translate(${x - 1.5},${y - 4})`}>
       <path
         onClick={() => alert('parking space')}
@@ -38,17 +38,20 @@ const ParkingSpace = ({ parkingNumber, x = 40, y = 30, pState = 'empty', childre
     </g>
 
   if (pState?.toLocaleLowerCase() === 'admin_assigned')
-    return (<g transform={`translate(${x},${y})`}><Car style={{ opacity: 0.5 }} car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
+    return (<g transform={`translate(${x},${y})`}><Car style={{ opacity: 0.5 }} car_color={user?.color || `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
 
+
+  if (pState?.toLocaleLowerCase() === 'user_assigned')
+    return (<g transform={`translate(${x},${y})`}><Car car_color={user?.color || `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
 
   if (pState?.toLocaleLowerCase() === 'user_in_use')
-    return (<g transform={`translate(${x},${y})`}><Car car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
+    return (<g transform={`translate(${x},${y})`}><Car car_color={user?.color || `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
 
   if (pState?.toLocaleLowerCase() === 'stand_in_use')
-    return (<g transform={`translate(${x},${y})`}><Car car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`}  /></g>)
+    return (<g transform={`translate(${x},${y})`}><Car car_color={user?.color || `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
 
   if (pState?.toLocaleLowerCase() === 'admin_in_use')
-    return (<g transform={`translate(${x},${y})`} onClick={() => props.open(user)} ><Car user={user} car_color={user?.color ||`#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
+    return (<g transform={`translate(${x},${y})`} onClick={() => props.open(user)} ><Car user={user} car_color={user?.color || `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, 0)}`} /></g>)
 
   return null
 

@@ -20,8 +20,18 @@ const firestore = app.firestore();
 //   { id: 'C24-3', x: 193, y: 30, parkingState: 'empty', user: null },
 //   { id: 'C24-4', x: 270, y: 30, parkingState: 'empty', user: null },
 //   { id: 'C24-5', x: 347, y: 30, parkingState: 'empty', user: null },
+
+
 // ];
 let users = [
+  {
+    id: '00 00 00 00',
+    email: "user@iop.com",
+    nombre: "Usuario Base",
+    placas: "PLA-K4S-00",
+    special: true,
+    color:'#29557D'
+  },
   {
     id: '131 20 173 12',
     email: "psanchez@iop.com",
@@ -65,6 +75,8 @@ const ParkingSpace = ({ parkingID, x = 40, y = 30, pState = 'empty', children, .
     await props.updateParking(parkingID, { user: null, state: 'empty' })
     setUser(null)
   }
+
+
 
 
 
